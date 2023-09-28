@@ -11,6 +11,7 @@ perps = [ 'BEL','SUI', '10000LADYS', '10000NFT', '1000BONK', '1000BTT', '1000FLO
 'C98', 'CEEK', 'CELO', 'CELR', 'CFX', 'CHR', 'CHZ', 'CKB', 'COMBO', 'COMP', 'DOGE', 'DOT', 'DUSK', 'DYDX', 'EDU', 'EGLD', 'ENJ', 'ENS', 'EOS', 'ETC', 'ETH', 'FET', 'FIL', 'FITFI', 'FLM', 'FLOW', 'FLR', 'FORTH', 'FTM', 'FXS', 'GALA', 'GAL', 'GFT', 'GLMR', 'GLM', 'GMT', 'GMX', 'GPT', 'GRT', 'GTC', 'HBAR', 'HFT', 'HIGH', 'HNT', 'HOOK', 'HOT', 'ICP', 'ICX', 'IDEX', 'ID', 'ILV', 'IMX', 'INJ', 'IOST', 'IOTA', 'YGG', 'ZEC', 'ZEN', 'ZIL', 'ZRX', 'CRO', 'CRV', 'CTC', 'CTK', 'CTSI', 'CVC', 'CVX', 'CYBER', 'DAR', 'DASH', 'DENT', 'DGB', 'DODO', 'IOTX', 'JASMY', 'JOE', 'JST', 'KAS', 'KAVA', 'KDA', 'KEY', 'KLAY', 'KNC', 'KSM', 'LDO', 'LEVER', 'LINA', 'LINK', 'LIT', 'LOOKS', 'LPT', 'LQTY', 'LRC', 'LTC', 'LUNA2', 'MAGIC', 'MANA', 'MASK', 'MATIC', 'MAV', 'MC', 'MDT', 'MINA', 'MKR', 'MTL', 'NEAR', 'NEO', 'NKN', 'OCEAN', 'OGN', 'OMG', 'ONE', 'ONT', 'OP', 'ORDI', 'OXT', 'PAXG', 'PENDLE', 'PEOPLE', 'PHB', 'QNT', 'QTUM', 'RAD', 'RDNT', 'REEF', 'REN', 'REQ', 'RLC', 'RNDR', 'ROSE', 'RPL', 'RSR', 'RSS3', 'RUNE', 'RVN', 'SAND', 'SCRT', 'SC', 'SEI', 'SFP', 'SHIB1000', 'SKL', 'SLP', 'SNX', 'SOL', 'SPELL', 'SSV', 'STG', 'STMX', 'STORJ', 'STX', 
 'SUI', 'SUN', 'SUSHI', 'SWEAT', 'SXP', 'THETA', 'TLM', 'TOMO', 'TRB', 'TRU', 'TRX', 'T', 'TWT', 'UMA', 'UNFI', 'UNI', 'VET', 'VGX', 'WAVES', 'WLD', 'WOO', 'XCN', 'XEM', 'XLM', 'XMR', 'XNO', 
 'XRP', 'XTZ', 'XVG', 'YFII', 'YFI', 'CORE', 'COTI', 'FRONT', 'DEFI']
+funding_rates = []
 TOKEN_BOT = os.getenv('TOKEN_BOT')
 CHAT_ID = os.getenv('CHAT_ID')
 COINGLASS_APIKEY = os.getenv('COINGLASS_APIKEY') 
@@ -85,5 +86,9 @@ def fetch_lowest_rates():
         print(f"Error {e}")
 
 
-fetch_funding_rates()
-fetch_lowest_rates()
+
+while True:
+    fetch_funding_rates()
+    fetch_lowest_rates()
+    print("Waiting 2 hours")
+    sleep(60 * 60 * 2)
