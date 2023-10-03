@@ -19,12 +19,14 @@ COINGLASS_APIKEY = os.getenv('COINGLASS_APIKEY')
 def send_telegram_message(message):
     try:
         telegram_url = f'https://api.telegram.org/bot{TOKEN_BOT}/sendMessage'
-        params = {'chat_id': CHAT_ID, 'text': message}
+        params = {'chat_id': CHAT_ID, 'text': str(message)}
         response = requests.post(telegram_url, params=params)
         if response.status_code != 200:
             print(f'Failed to send message to Telegram. Error code: {response.status_code}')
     except Exception as e:
         print(f"Error: {e}")
+
+
 
 def fetch_funding_rates():
     try:
@@ -46,18 +48,22 @@ def fetch_funding_rates():
                 
                 # Check if 'uMarginList' exists and has at least one element
                 if 'uMarginList' in item and len(item['uMarginList']) > 0:
-                    funding_rate = item['uMarginList'][0].get('rate', None)
-                    exchange = item['uMarginList'][0].get('exchangeName', None)
-                else:
-                    funding_rate = None
-                    exchange = None
+                    for items in item['uMarginList']:
+                        # Check if 'rate' exists in the dictionary
+                        if 'rate' in items:
+                            funding_rate = items['rate']
+                            exchange_name = items['exchangeName']
 
+                else:
+                    print(f"No uMarginList for symbol: {symbol}")
+                    funding_rate = None
+                    exchange_name = None
 
                 if funding_rate is not None:
                     data = {
-                        'symbol': symbol,
-                        'funding_rate': funding_rate,
-                        'exchange' : exchange
+                    'symbol': symbol,
+                    'funding_rate': funding_rate,
+                    'exchange' : exchange_name
                     }
 
                     funding_rates.append(data)
@@ -66,22 +72,29 @@ def fetch_funding_rates():
 
 
 
+
+
+
 def fetch_lowest_rates():
+    prev_message = ''
+
     try:
         df = pd.DataFrame(funding_rates)
-        #df.to_csv('funding_rates.csv')
-        #print("saved in csv file.")
-
-        #df = pd.read_csv('funding_rates.csv')
-        #df.set_index('symbol', inplace=True)
         lowest_funding = df[df['funding_rate'] <= -1.5]
 
         if lowest_funding.empty:
             print("No low funding perps")
             pass
         else:
-            message = lowest_funding.to_string(index=False)
-            send_telegram_message(message)
+            message = "Lowest Funding Perps:\n"
+            for index, row in tqdm(lowest_funding.iterrows(), desc="Processing low funding rate perps"):
+                symbol = row['symbol']
+                message += f"Symbol: {row['symbol']}, Funding Rate: {row['funding_rate']}, Exchange: {row['exchange']}\n"
+
+            if message != prev_message:
+                prev_message = message
+                # Send the formatted message to Telegram
+                send_telegram_message(message)
     except Exception as e:
         print(f"Error {e}")
 
@@ -91,4 +104,5 @@ while True:
     fetch_funding_rates()
     fetch_lowest_rates()
     print("Waiting 2 hours")
-    sleep(60 * 60 * 2)
+    sleep(15)
+    #sleep(60 * 60 * 2)
