@@ -104,5 +104,4 @@ while True:
     fetch_funding_rates()
     fetch_lowest_rates()
     print("Waiting 2 hours")
-    sleep(15)
-    #sleep(60 * 60 * 2)
+    sleep(60 * 60 * 2)
