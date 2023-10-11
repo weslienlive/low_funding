@@ -98,7 +98,6 @@ def fetch_lowest_rates():
 
 
 while True:
-    fetch_perps()
     fetch_funding_rates()
     fetch_lowest_rates()
     print("Waiting 2 hours")
