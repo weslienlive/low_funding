@@ -5,12 +5,10 @@ import json
 import requests
 from dotenv import load_dotenv 
 import pandas as pd
-import ccxt
+
+
 
 load_dotenv()
-exchange = ccxt.bybit()
-exchange.load_time_difference()
-perps = []
 funding_rates = []
 TOKEN_BOT = os.getenv('TOKEN_BOT')
 CHAT_ID = os.getenv('CHAT_ID')
@@ -28,17 +26,6 @@ def send_telegram_message(message):
     except Exception as e:
         print(f"Error: {e}")
 
-
-def fetch_perps():
-    try:
-        # Loop through each symbol in the 'markets' list, displaying a progress bar.
-        for symbol in tqdm(markets, desc="Fetching symbols and prices..."):
-
-            # Check if the symbol ends with ':USDT'
-            if symbol.endswith(':USDT'):
-                perps.append(symbol)
-    except Exception as e:
-        print(f'Error: {e}')
 
 
 def fetch_funding_rates():
