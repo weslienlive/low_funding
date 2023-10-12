@@ -10,6 +10,7 @@ import pandas as pd
 
 load_dotenv()
 funding_rates = []
+prev_message = ''
 TOKEN_BOT = os.getenv('TOKEN_BOT')
 CHAT_ID = os.getenv('CHAT_ID')
 COINGLASS_APIKEY = os.getenv('COINGLASS_APIKEY') 
@@ -72,15 +73,12 @@ def fetch_funding_rates():
 
 
 def fetch_lowest_rates():
-    prev_message = ''
-
     try:
         df = pd.DataFrame(funding_rates)
         lowest_funding = df[df['funding_rate'] <= -1.5]
 
         if lowest_funding.empty:
             print("No low funding perps")
-            pass
         else:
             message = "Lowest Funding Perps:\n"
             for index, row in tqdm(lowest_funding.iterrows(), desc="Processing low funding rate perps"):
@@ -92,6 +90,7 @@ def fetch_lowest_rates():
                 # Send the formatted message to Telegram
                 send_telegram_message(message)
                 print(message)
+    
     except Exception as e:
         print(f"Error {e}")
 
