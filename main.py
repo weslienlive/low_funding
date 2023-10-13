@@ -73,9 +73,10 @@ def fetch_funding_rates():
 
 
 def fetch_lowest_rates():
+    global prev_message
     try:
         df = pd.DataFrame(funding_rates)
-        lowest_funding = df[df['funding_rate'] <= -1.5]
+        lowest_funding = df[df['funding_rate'] <= -1.6]
 
         if lowest_funding.empty:
             print("No low funding perps")
@@ -88,7 +89,7 @@ def fetch_lowest_rates():
             if message != prev_message:
                 prev_message = message
                 # Send the formatted message to Telegram
-                send_telegram_message(message)
+                ssend_telegram_message(message)
                 print(message)
     
     except Exception as e:
@@ -100,4 +101,4 @@ while True:
     fetch_funding_rates()
     fetch_lowest_rates()
     print("Waiting 2 hours")
-    sleep(60 * 60 * 2)
+    sleep(60 * 60 )
