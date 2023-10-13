@@ -73,27 +73,22 @@ def fetch_funding_rates():
 
 
 def fetch_lowest_rates():
-    global prev_message
     try:
         df = pd.DataFrame(funding_rates)
-        lowest_funding = df[df['funding_rate'] <= -1.6]
+        lowest_funding = df[df['funding_rate'] <= -1.5]
 
         if lowest_funding.empty:
             print("No low funding perps")
         else:
-            message = "Lowest Funding Perps:\n"
             for index, row in tqdm(lowest_funding.iterrows(), desc="Processing low funding rate perps"):
                 symbol = row['symbol']
-                message += f"Symbol: {row['symbol']}, Funding Rate: {row['funding_rate']}, Exchange: {row['exchange']}\n"
-
-            if message != prev_message:
-                prev_message = message
-                # Send the formatted message to Telegram
-                ssend_telegram_message(message)
-                print(message)
+                message = f"Lowest Funding Perps:\n Symbol: {row['symbol']}, Funding Rate: {row['funding_rate']}, Exchange: {row['exchange']}\n"
+                send_telegram_message(message)
     
     except Exception as e:
         print(f"Error {e}")
+
+
 
 
 
@@ -101,4 +96,4 @@ while True:
     fetch_funding_rates()
     fetch_lowest_rates()
     print("Waiting 1 hour")
-    sleep(60 * 60 )
+    sleep(60 * 60)
