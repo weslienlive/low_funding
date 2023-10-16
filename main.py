@@ -5,12 +5,12 @@ import json
 import requests
 from dotenv import load_dotenv 
 import pandas as pd
-
+import datetime
 
 
 load_dotenv()
 funding_rates = []
-prev_message = ''
+tracker = set()
 TOKEN_BOT = os.getenv('TOKEN_BOT')
 CHAT_ID = os.getenv('CHAT_ID')
 COINGLASS_APIKEY = os.getenv('COINGLASS_APIKEY') 
@@ -26,6 +26,15 @@ def send_telegram_message(message):
             print('Message succesfully sent to Telegram.')
     except Exception as e:
         print(f"Error: {e}")
+
+
+def reset_tracker_if_midnight():
+    now = datetime.datetime.now()
+    if now.hour == 0:
+        global tracker
+        tracker = set()
+        print("Tracker reset at midnight.")
+
 
 
 
@@ -73,6 +82,7 @@ def fetch_funding_rates():
 
 
 def fetch_lowest_rates():
+    global tracker
     try:
         df = pd.DataFrame(funding_rates)
         lowest_funding = df[df['funding_rate'] <= -1.5]
@@ -82,18 +92,21 @@ def fetch_lowest_rates():
         else:
             for index, row in tqdm(lowest_funding.iterrows(), desc="Processing low funding rate perps"):
                 symbol = row['symbol']
-                message = f"Lowest Funding Perps:\n Symbol: {row['symbol']}, Funding Rate: {row['funding_rate']}, Exchange: {row['exchange']}\n"
-                send_telegram_message(message)
-    
+
+                if symbol not in tracker:
+                    message = f"Lowest Funding Perps:\n Symbol: {row['symbol']}, Funding Rate: {row['funding_rate']}, Exchange: {row['exchange']}\n"
+                    send_telegram_message(message)
+
+                    tracker.add(symbol)
+        
     except Exception as e:
         print(f"Error {e}")
-
-
 
 
 
 while True:
     fetch_funding_rates()
     fetch_lowest_rates()
+    reset_tracker_if_midnight()
     print("Waiting 1 hour")
     sleep(60 * 60)
